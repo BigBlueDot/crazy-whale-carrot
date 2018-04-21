@@ -76,7 +76,8 @@ class App extends Component {
     map: [],
     makerX: 0,
     makerY: 0,
-    mapName: ''
+    mapName: '',
+    mode: 'W'
   };
 
   componentDidMount() {
@@ -116,37 +117,60 @@ class App extends Component {
   };
 
   onkeypress = (event) => {
+    let drawValue = this.state.mode === 'W' ? 1 : 0;
+
     if (event.code === 'ArrowUp') {
-      this.modDirection(1, this.state.makerX, this.state.makerY, this.modNorth);
-      this.modDirection(1, this.state.makerX, this.state.makerY - 1, this.modSouth);
+      if (this.state.mode !== 'E') {
+        this.modDirection(drawValue, this.state.makerX, this.state.makerY, this.modNorth);
+        this.modDirection(drawValue, this.state.makerX, this.state.makerY - 1, this.modSouth);
+      }
 
       this.setState({
         makerY: this.state.makerY - 1
       })
     }
     else if(event.code === 'ArrowRight') {
-      this.modDirection(1, this.state.makerX, this.state.makerY, this.modEast);
-      this.modDirection(1, this.state.makerX + 1, this.state.makerY, this.modWest);
+      if (this.state.mode !== 'E') {
+        this.modDirection(drawValue, this.state.makerX, this.state.makerY, this.modEast);
+        this.modDirection(drawValue, this.state.makerX + 1, this.state.makerY, this.modWest);
+      }
 
       this.setState({
         makerX: this.state.makerX + 1
       })
     }
     else if(event.code === 'ArrowDown') {
-      this.modDirection(1, this.state.makerX, this.state.makerY, this.modSouth);
-      this.modDirection(1, this.state.makerX, this.state.makerY + 1, this.modNorth);
+      if (this.state.mode !== 'E') {
+        this.modDirection(drawValue, this.state.makerX, this.state.makerY, this.modSouth);
+        this.modDirection(drawValue, this.state.makerX, this.state.makerY + 1, this.modNorth);
+      }
 
       this.setState({
         makerY: this.state.makerY + 1
       })
     }
     else if(event.code === 'ArrowLeft') {
-      this.modDirection(1, this.state.makerX, this.state.makerY, this.modWest);
-      this.modDirection(1, this.state.makerX - 1, this.state.makerY, this.modEast);
+      if (this.state.mode !== 'E') {
+        this.modDirection(drawValue, this.state.makerX, this.state.makerY, this.modWest);
+        this.modDirection(drawValue, this.state.makerX - 1, this.state.makerY, this.modEast);
+      }
 
       this.setState({
         makerX: this.state.makerX - 1
       })
+    }
+    else if (event.code === 'KeyW') {
+      this.setState({
+        mode: 'W'
+      });
+    } else if (event.code === 'KeyE') {
+      this.setState({
+        mode: 'E'
+      });
+    } else if (event.code === 'KeyR') {
+      this.setState({
+        mode: 'R'
+      });
     }
   }
 
@@ -222,12 +246,12 @@ class App extends Component {
           Gumption: {this.state.gumption} <br />
           Resilience: {this.state.resilience}
         </p>
+        <div>
+          Press 'W' to write lines, 'R' to remove, and 'E' to exist without modifying
+        </div>
         <div style={{position: 'relative', width:"450px"}}>
           {rows}
           <img src={red_dot} style={{position:'absolute', top: (this.state.makerY * 15) + 6, left: (this.state.makerX * 15) + 6}} />
-        </div>
-        <div>
-          {JSON.stringify(this.state.map)}
         </div>
         <div>
           Map Name: <input type="text" value={this.state.mapName} onChange={this.handleFileNameChange} />
