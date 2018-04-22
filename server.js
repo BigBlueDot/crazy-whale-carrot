@@ -12,14 +12,31 @@ app.get('/api/hello', (req, res) => {
 });
 
 app.get('/api/map', (req, res) => {
-  map = new Array(30).fill(new Array(30).fill(0))
-  res.send({
-    coords: {
-      x: 0,
-      y: 0
-    },
-    map: map
-  })
+  const mapName = req.query.mapName;
+
+  if (mapName) {
+    fs.readFile('./map_files/' + mapName + '.json', (err, data) => {
+      if (err) throw err;
+      const mapInfo = JSON.parse(data);
+      res.send({
+        coords: {
+          x: 0,
+          y: 0
+        },
+        map: mapInfo.map
+      })
+    });
+  }
+  else {
+    map = new Array(30).fill(new Array(30).fill(0))
+    res.send({
+      coords: {
+        x: 0,
+        y: 0
+      },
+      map: map
+    })
+  }
 })
 
 app.post('/api/map', (req, res) => {

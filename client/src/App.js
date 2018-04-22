@@ -77,7 +77,9 @@ class App extends Component {
     makerX: 0,
     makerY: 0,
     mapName: '',
-    mode: 'W'
+    mode: 'W',
+    showLoadMapText: false,
+    loadMapName: ''
   };
 
   componentDidMount() {
@@ -227,6 +229,33 @@ class App extends Component {
     })
   }
 
+  handleLoadMapName = (event) => {
+    this.setState({
+      loadMapName: event.target.value
+    })
+  }
+
+  loadMap = async () => {
+    if (this.state.showLoadMapText) {
+      const mapName = this.state.loadMapName;
+      const mapResponse = await fetch('/api/map?mapName=' + mapName);;
+      const res = await mapResponse.json();
+
+      this.setState({
+        showLoadMapText: false,
+        mapCoordsX: res.coords.x,
+        mapCoordsY: res.coords.y,
+        map: res.map
+      })
+
+      return false;
+    } else {
+      this.setState({
+        showLoadMapText: true
+      });
+    }
+  }
+
   render() {
     let rows = [];
 
@@ -256,7 +285,10 @@ class App extends Component {
         <div>
           Map Name: <input type="text" value={this.state.mapName} onChange={this.handleFileNameChange} />
         </div>
-        <button onClick={this.saveMap}>Save Map</button>
+        <button onClick={this.saveMap}>Save Map</button>&nbsp;<button onClick={this.loadMap}>Load Map</button>
+        {this.state.showLoadMapText && (<div>
+          Load Map: <input type="text" value={this.state.loadMapName} onChange={this.handleLoadMapName} />
+        </div>)}
       </div>
     );
   }
