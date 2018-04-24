@@ -40,16 +40,21 @@ app.get('/api/map', (req, res) => {
 })
 
 app.post('/api/map', (req, res) => {
-  // TODO: Save map to file
   const map = req.body.map;
-  const fileName = req.body.fileName;
+  const overwrite = req.body.shouldOverwrite;
+  const fileName = './map_files/' + req.body.fileName + '.json';
   const savedData = {
     map
   }
 
-  fs.writeFile('./map_files/' + fileName + '.json', JSON.stringify(savedData), 'utf8', (success) => {
-    res.sendStatus(200);
-  });
+  if (!overwrite && fs.existsSync(fileName)) {
+    res.status(409).send("This file already exists; please choose a different file name.");
+  }
+  else {
+    fs.writeFile(fileName, JSON.stringify(savedData), 'utf8', (success) => {
+      res.sendStatus(200);
+    });
+  }
 })
 
 app.get('/api/stats', (req, res) => {

@@ -79,7 +79,8 @@ class App extends Component {
     mapName: '',
     mode: 'W',
     showLoadMapText: false,
-    loadMapName: ''
+    loadMapName: '',
+    showOverwriteDialog: false
   };
 
   componentDidMount() {
@@ -209,7 +210,8 @@ class App extends Component {
     return binValue[0] + binValue[1] + binValue[2] + value;
   }
 
-  saveMap = () => {
+  saveMap = (event, shouldOverwrite) => {
+    shouldOverwrite = shouldOverwrite || false;
     fetch('/api/map', {
       method: 'POST',
       headers: {
@@ -218,9 +220,31 @@ class App extends Component {
       },
       body: JSON.stringify({
         map: this.state.map,
-        fileName: this.state.mapName
+        fileName: this.state.mapName,
+        shouldOverwrite
       }),
-  });
+    }).then(res => {
+      if (res.status === 409) {
+        this.setState({
+          showOverwriteDialog:true
+        });
+      }
+      else {
+        this.setState({
+          showOverwriteDialog:false
+        });
+      }
+    });
+  }
+
+  overwriteMap = (event) => {
+    this.saveMap(event, true);
+  }
+
+  cancelOverwrite = () => {
+    this.setState({
+      showOverwriteDialog:false
+    });
   }
 
   handleFileNameChange = (event) => {
@@ -277,6 +301,10 @@ class App extends Component {
         </p>
         <div>
           Press 'W' to write lines, 'R' to remove, and 'E' to exist without modifying
+        </div>
+        <div style={this.state.showOverwriteDialog ? {} : {'display': 'none'}}>
+          This file name is already in use.  Would you like to overwrite?
+          <button onClick={this.overwriteMap}>Yes</button>&nbsp;<button onClick={this.cancelOverwrite}>No</button>
         </div>
         <div style={{position: 'relative', width:"450px"}}>
           {rows}
