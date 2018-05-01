@@ -23,7 +23,11 @@ app.get('/api/map', (req, res) => {
           x: 0,
           y: 0
         },
-        map: mapInfo.map
+        map: mapInfo.map,
+        northMap: mapInfo.northMap || '',
+        eastMap: mapInfo.eastMap || '',
+        southMap: mapInfo.southMap || '',
+        westMap: mapInfo.westmap || ''
       })
     });
   }
@@ -44,7 +48,11 @@ app.post('/api/map', (req, res) => {
   const overwrite = req.body.shouldOverwrite;
   const fileName = './map_files/' + req.body.fileName + '.json';
   const savedData = {
-    map
+    map,
+    northMap: '',
+    eastMap: '',
+    southMap: '',
+    westMap: ''
   }
 
   if (!overwrite && fs.existsSync(fileName)) {
