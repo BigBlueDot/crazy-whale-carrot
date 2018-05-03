@@ -90,11 +90,13 @@ class App extends Component {
     northMap: '',
     eastMap: '',
     southMap: '',
-    westMap: ''
+    westMap: '',
+    maps: []
   };
 
   componentDidMount() {
     document.addEventListener("keydown", this.onkeypress, false);
+
 
     this.callStatsApi()
       .then(res => this.setState({
@@ -103,12 +105,26 @@ class App extends Component {
       }))
       .catch(err => console.log(err));
 
-      this.callMapApi()
-        .then(res => this.setState({
-          mapCoordsX: res.coords.x,
-          mapCoordsY: res.coords.y,
-          map: res.map
-        }))
+    this.callMapApi()
+      .then(res => this.setState({
+        mapCoordsX: res.coords.x,
+        mapCoordsY: res.coords.y,
+        map: res.map
+      }))
+
+    this.callMapsApi()
+      .then(maps => this.setState({
+        maps: [''].concat(maps)
+      }))
+  }
+
+  callMapsApi = async () => {
+    const mapListResponse = await fetch('/api/map-list');
+    const mapList = await mapListResponse.json();
+
+    if (mapListResponse.status !== 200) throw Error(mapList.message);
+
+    return mapList.maps;
   }
 
   callMapApi = async () => {
@@ -336,6 +352,11 @@ class App extends Component {
       });
     }
 
+    let mapOptions = [];
+    this.state.maps.forEach(m => {
+      mapOptions.push(<option value={m} key={m}>{m}</option>)
+    })
+
     return (
       <div className="App" onKeyPress={this.onkeypress}>
         <p className="App-intro">
@@ -361,24 +382,39 @@ class App extends Component {
           <h4>Set Adjacent Maps:</h4>
           <div>
             <span>North:</span>
-            <span><input type="text" value={this.state.northMap} onChange={this.handleNorthMapChange} /></span>
+            <span>
+              <select onChange={this.handleNorthMapChange} value={this.state.northMap}>
+                {mapOptions}
+              </select></span>
           </div>
           <div>
             <span>East:</span>
-            <span><input type="text" value={this.state.eastMap} onChange={this.handleEastMapChange} /></span>
+            <span>
+              <select onChange={this.handleEastMapChange} value={this.state.eastMap}>
+                {mapOptions}
+              </select></span>
           </div>
           <div>
             <span>South:</span>
-            <span><input type="text" value={this.state.southMap} onChange={this.handleSouthMapChange} /></span>
+            <span>
+              <select onChange={this.handleSouthMapChange} value={this.state.southMap}>
+                {mapOptions}
+              </select></span>
           </div>
           <div>
             <span>West:</span>
-            <span><input type="text" value={this.state.westMap} onChange={this.handleWestMapChange} /></span>
+            <span>
+              <select onChange={this.handleWestMapChange} value={this.state.westMap}>
+                {mapOptions}
+              </select></span>
           </div>
         </div>
         <button onClick={this.saveMap}>Save Map</button>&nbsp;<button onClick={this.loadMap}>Load Map</button>
         {this.state.showLoadMapText && (<div>
-          Load Map: <input type="text" value={this.state.loadMapName} onChange={this.handleLoadMapName} />
+          Load Map:
+            <select onChange={this.handleLoadMapName} value={this.state.loadMapName}>
+              {mapOptions}
+            </select>
         </div>)}
       </div>
     );

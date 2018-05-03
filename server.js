@@ -11,6 +11,19 @@ app.get('/api/hello', (req, res) => {
   res.send({ express: 'Hello From Express' });
 });
 
+app.get('/api/map-list', (req, res) => {
+  fs.readdir('./map_files/', function(err, fileNames) {
+    if (err) {
+      onError(err);
+      return;
+    }
+
+    res.send({
+      maps: fileNames.map(fn => fn.split('.')[0])
+    })
+  });
+});
+
 app.get('/api/map', (req, res) => {
   const mapName = req.query.mapName;
 
