@@ -67,6 +67,12 @@ Object.keys(binaryToInt).forEach(key => {
   intToBinary[binaryToInt[key]] = key;
 })
 
+const modeLookup = {
+  'W': 'Write',
+  'R': 'Remove',
+  'E': 'Exist'
+}
+
 class App extends Component {
   state = {
     gumption: '',
@@ -339,6 +345,7 @@ class App extends Component {
         <div>
           Press 'W' to write lines, 'R' to remove, and 'E' to exist without modifying
         </div>
+        <h3>{modeLookup[this.state.mode]} Mode</h3>
         <div style={this.state.showOverwriteDialog ? {} : {'display': 'none'}}>
           This file name is already in use.  Would you like to overwrite?
           <button onClick={this.overwriteMap}>Yes</button>&nbsp;<button onClick={this.cancelOverwrite}>No</button>
