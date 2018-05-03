@@ -80,7 +80,11 @@ class App extends Component {
     mode: 'W',
     showLoadMapText: false,
     loadMapName: '',
-    showOverwriteDialog: false
+    showOverwriteDialog: false,
+    northMap: '',
+    eastMap: '',
+    southMap: '',
+    westMap: ''
   };
 
   componentDidMount() {
@@ -221,6 +225,10 @@ class App extends Component {
       body: JSON.stringify({
         map: this.state.map,
         fileName: this.state.mapName,
+        northMap: this.state.northMap,
+        eastMap: this.state.eastMap,
+        southMap: this.state.southMap,
+        westMap: this.state.westMap,
         shouldOverwrite
       }),
     }).then(res => {
@@ -259,6 +267,30 @@ class App extends Component {
     })
   }
 
+  handleNorthMapChange = (event) => {
+    this.setState({
+      northMap: event.target.value
+    })
+  }
+
+  handleEastMapChange = (event) => {
+    this.setState({
+      eastMap: event.target.value
+    })
+  }
+
+  handleSouthMapChange = (event) => {
+    this.setState({
+      southMap: event.target.value
+    })
+  }
+
+  handleWestMapChange = (event) => {
+    this.setState({
+      westMap: event.target.value
+    })
+  }
+
   loadMap = async () => {
     if (this.state.showLoadMapText) {
       const mapName = this.state.loadMapName;
@@ -269,7 +301,12 @@ class App extends Component {
         showLoadMapText: false,
         mapCoordsX: res.coords.x,
         mapCoordsY: res.coords.y,
-        map: res.map
+        map: res.map,
+        northMap: res.northMap,
+        eastMap: res.eastMap,
+        southMap: res.southMap,
+        westMap: res.westMap,
+        mapName,
       })
 
       return false;
@@ -312,6 +349,25 @@ class App extends Component {
         </div>
         <div>
           Map Name: <input type="text" value={this.state.mapName} onChange={this.handleFileNameChange} />
+        </div>
+        <div>
+          <h4>Set Adjacent Maps:</h4>
+          <div>
+            <span>North:</span>
+            <span><input type="text" value={this.state.northMap} onChange={this.handleNorthMapChange} /></span>
+          </div>
+          <div>
+            <span>East:</span>
+            <span><input type="text" value={this.state.eastMap} onChange={this.handleEastMapChange} /></span>
+          </div>
+          <div>
+            <span>South:</span>
+            <span><input type="text" value={this.state.southMap} onChange={this.handleSouthMapChange} /></span>
+          </div>
+          <div>
+            <span>West:</span>
+            <span><input type="text" value={this.state.westMap} onChange={this.handleWestMapChange} /></span>
+          </div>
         </div>
         <button onClick={this.saveMap}>Save Map</button>&nbsp;<button onClick={this.loadMap}>Load Map</button>
         {this.state.showLoadMapText && (<div>
