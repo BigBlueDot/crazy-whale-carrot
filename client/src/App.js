@@ -263,6 +263,10 @@ class App extends Component {
         this.setState({
           showOverwriteDialog:false
         });
+        this.callMapsApi()
+        .then(maps => this.setState({
+          maps: [''].concat(maps)
+        }))
       }
     });
   }
